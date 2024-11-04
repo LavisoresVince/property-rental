@@ -64,28 +64,47 @@ public class PropertyRentalSystem {
         } while (opt != 5);    
     }
     
-    public static void generateReport(){
-        System.out.println("\n\t\t\t=== LEASES REPORT ===\n");
+    public static void generateReport() {
+        Tenants ten = new Tenants();
         
-        String sql = "SELECT " +
-                        "tenants.fname, " +
-                        "tenants.lname, " +
-                        "properties.address, " +
-                        "properties.price, " +
-                        "leases.start_date, " +
-                        "leases.end_date " +
-                    "FROM " +
-                        "leases " +
-                    "JOIN " +
-                        "tenants ON leases.tenant_id = tenants.id " +
-                    "JOIN " +
-                        "properties ON leases.property_id = properties.id";
-        
-        String[] headers = {"First Name", "Last Name", "Address", "Montly Rent Price", "Start Date", "End Date"};
-        String[] columns = {"fname", "lname", "address", "price", "start_date", "end_date"};
-        
-        conf.viewRecords(sql, 27, headers, columns);
-        System.out.println("\n");
+        System.out.println("\n\t\t\t--- LEASES REPORT ---");
+           
+        System.out.println("\n\t\t\t=== Tenant List ===");
+        ten.viewTenants("SELECT * FROM tenants");
+       
+        int tenantId;
+        do {
+            System.out.print("\nEnter Tenant ID for the report: ");
+            tenantId = scan.nextInt();
+            if (!conf.doesIDExist("tenants", tenantId)) {
+                System.out.println("Tenant ID not found. Please try again.");
+            }
+        } while (!conf.doesIDExist("tenants", tenantId));
+
+        System.out.println("\n=================================");
+        System.out.println("       TENANT DETAILS             ");
+        System.out.println("=================================");
+        System.out.printf("Tenant ID   : %d%n", tenantId);
+        System.out.printf("First Name  : %s%n", conf.getDataFromID("tenants", tenantId, "fname"));
+        System.out.printf("Last Name   : %s%n", conf.getDataFromID("tenants", tenantId, "lname"));
+        System.out.println("---------------------------------");
+
+        if (conf.isTableEmpty("leases WHERE tenant_id = " + tenantId)) {
+            System.out.println("No lease records found for this tenant.");
+        } else {
+            System.out.println("Lease Details:");
+            String sql = "SELECT properties.address, properties.price, leases.start_date, leases.end_date " +
+                         "FROM leases " +
+                         "JOIN properties ON leases.property_id = properties.id " +
+                         "WHERE leases.tenant_id = " + tenantId;
+
+            String[] headers = {"Address", "Monthly Rent Price", "Start Date", "End Date"};
+            String[] columns = {"address", "price", "start_date", "end_date"};
+
+            conf.viewRecords(sql, 20, headers, columns);
+            System.out.println("\n=================================");
+        }
     }
+
 
 }

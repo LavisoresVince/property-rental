@@ -180,8 +180,8 @@ public class Config {
         return false;
     }
     
-    public String getDataFromID(String table, int id, String idColumn, String column){
-        String findID = "SELECT " + column + " FROM " + table + " WHERE " + idColumn + " = ?";
+    public String getDataFromID(String table, int id, String column){
+        String findID = "SELECT " + column + " FROM " + table + " WHERE id = ?";
         String data = "";
         
         try (Connection con = connectDB();      
@@ -197,6 +197,25 @@ public class Config {
         }
         
         return data;
+    }
+    
+    public boolean isTableEmpty(String tableName) {
+        String sql = "SELECT COUNT(*) FROM " + tableName;
+        
+        try (Connection con = connectDB();
+             PreparedStatement pst = con.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+
+            if (rs.next()) {
+                int rowCount = rs.getInt(1);  
+                return rowCount == 0;         
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        
+        return true;  
     }
 }
 

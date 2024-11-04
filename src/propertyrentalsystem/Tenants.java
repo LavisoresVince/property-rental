@@ -50,7 +50,7 @@ public class Tenants {
         } while (option != 5);
     }
 
-    private void viewTenants(String query) {
+    public void viewTenants(String query) {
         
         String[] headers = {"ID", "First Name", "Last Name", "Contact Info"};
         String[] columns = {"id", "fname", "lname", "contact_info"};
